@@ -146,7 +146,7 @@ class AGIOpenClient:
                 "Wait 1 second to verify text appears"
             ]
             
-            # Add image upload if provided - but STOP after upload (don't click Post)
+            # Add image upload if provided
             if final_image_path and os.path.exists(final_image_path):
                 todos.extend([
                     "Click the icon button with a picture or camera icon (Add media/Photo button) in the post editor toolbar",
@@ -155,21 +155,36 @@ class AGIOpenClient:
                     f"Look for file named: {os.path.basename(final_image_path)}",
                     "Click on the image file to select it",
                     "Click 'Open' button to upload",
-                    "Wait 5 seconds for upload to complete",
-                    "STOP - Do NOT click Post button. Draft is ready."
+                    "Wait 5 seconds for upload to complete"
                 ])
-            else:
-                todos.append("STOP - Do NOT click Post button. Draft is ready.")
+            
+            # Add post and share steps
+            todos.extend([
+                "Click the 'Post' button to publish the post",
+                "Wait 5 seconds for the post to be published and appear in the feed",
+                "Click on 'Activity' in the left sidebar navigation menu",
+                "Wait 3 seconds for Activity page to load",
+                "Find the most recent post you just created (should be at the top)",
+                "Click the 'Share' button (usually has a forward/arrow icon) on your post",
+                "Wait 2 seconds for the share modal to open",
+                "In the 'Type a name' search box, look for the first person in the list",
+                "Click the checkbox or select the first person shown in the list (top person)",
+                "Click the checkbox or select the second person shown in the list (second person)",
+                "Click inside the 'Write a message' text box",
+                "Type: new post check it out!",
+                "Click the 'Send' button to share the post with the selected people",
+                "Wait 2 seconds to confirm the share is complete"
+            ])
             
             agent.set_task(
                 task="Create LinkedIn post: open tab, paste text, upload image, STOP",
                 todos=todos
             )
             
-            # Simplified, faster instruction
+            # Instruction including post and share
             image_filename_str = os.path.basename(final_image_path) if final_image_path else None
             
-            instruction_text = f"""Create a LinkedIn post draft quickly:
+            instruction_text = f"""Create and share a LinkedIn post:
 
 1. Open linkedin.com/feed in new tab - wait 3 seconds
 2. Click 'Start a post' text box/button - wait 2 seconds for modal
@@ -182,9 +197,21 @@ class AGIOpenClient:
 9. Click on the file: {image_filename_str}
 10. Click 'Open' button
 11. Wait 5 seconds for image to appear
-12. STOP immediately - do NOT click Post''' if final_image_path else '5. STOP immediately - do NOT click Post'}
+12. Click the 'Post' button to publish''' if final_image_path else '5. Click the "Post" button to publish'}
+6. Wait 5 seconds for post to be published
+7. Click 'Activity' in the left sidebar navigation menu
+8. Wait 3 seconds for Activity page to load
+9. Find your most recent post (should be at the top of the list)
+10. Click the 'Share' button on your post (usually has a forward arrow icon)
+11. Wait 2 seconds for the share modal/dialog to open
+12. In the 'Type a name' section, you will see a list of people - select the FIRST person shown (click their checkbox or name)
+13. Select the SECOND person shown in the list (click their checkbox or name)
+14. Click inside the 'Write a message' text box
+15. Type exactly: new post check it out!
+16. Click the 'Send' button to share the post with the selected people
+17. Wait 2 seconds to confirm completion
 
-IMPORTANT: Text is in clipboard. Just paste it. After image upload (if any), STOP without clicking Post."""
+IMPORTANT: Text is in clipboard. Paste it, post it, then share with top 2 people from the list."""
             
             # Store task reference BEFORE creating it for proper cancellation
             self.current_task = asyncio.create_task(
@@ -246,9 +273,9 @@ IMPORTANT: Text is in clipboard. Just paste it. After image upload (if any), STO
             
             return {
                 "success": True, 
-                "post_url": "Draft ready",
-                "post_id": "draft",
-                "message": "Post draft created successfully! Review and post manually on LinkedIn."
+                "post_url": "Posted and shared",
+                "post_id": "posted",
+                "message": "Post published and shared with selected contacts successfully!"
             }
         except asyncio.CancelledError:
             return {"success": False, "error": "Operation cancelled"}
