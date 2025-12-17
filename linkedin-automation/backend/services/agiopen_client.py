@@ -159,19 +159,22 @@ class AGIOpenClient:
                 ])
             
             # Add post and share steps
+            profile_url = config.LINKEDIN_PROFILE_URL
             todos.extend([
                 "Click the 'Post' button to publish the post",
-                "Wait 5 seconds for the post to be published and appear in the feed",
-                "Click on 'Activity' in the left sidebar navigation menu",
-                "Wait 3 seconds for Activity page to load",
-                "Find the most recent post you just created (should be at the top)",
-                "Click the 'Share' button (usually has a forward/arrow icon) on your post",
-                "Wait 2 seconds for the share modal to open",
-                "In the 'Type a name' search box, look for the first person in the list",
-                "Click the checkbox or select the first person shown in the list (top person)",
-                "Click the checkbox or select the second person shown in the list (second person)",
+                "Wait 5 seconds for the post to be published",
+                f"Navigate to {profile_url}",
+                "Wait 3 seconds for the profile page to load",
+                "Click on the 'Activity' tab on the profile page",
+                "Wait 3 seconds for Activity tab to load",
+                "Look for the 'Posts' section in the Activity tab",
+                "Find the most recent post you just created (should be at the top of Posts)",
+                "Click the 'Share' button on that post (usually has a forward/arrow icon)",
+                "Wait 2 seconds for the share modal/dialog to open",
+                "In the 'Type a name' section, you will see a list of people - click the checkbox or name of the FIRST person shown in the list",
+                "Click the checkbox or name of the SECOND person shown in the list",
                 "Click inside the 'Write a message' text box",
-                "Type: new post check it out!",
+                "Type exactly: new post check it out!",
                 "Click the 'Send' button to share the post with the selected people",
                 "Wait 2 seconds to confirm the share is complete"
             ])
@@ -185,6 +188,7 @@ class AGIOpenClient:
             image_filename_str = os.path.basename(final_image_path) if final_image_path else None
             
             # Build instruction with correct numbering
+            profile_url = config.LINKEDIN_PROFILE_URL
             if final_image_path:
                 instruction_text = f"""Create and share a LinkedIn post:
 
@@ -201,19 +205,22 @@ class AGIOpenClient:
 11. Wait 5 seconds for image to appear
 12. Click the 'Post' button to publish
 13. Wait 5 seconds for post to be published
-14. Click 'Activity' in the left sidebar navigation menu
-15. Wait 3 seconds for Activity page to load
-16. Find your most recent post (should be at the top of the list)
-17. Click the 'Share' button on your post (usually has a forward arrow icon)
-18. Wait 2 seconds for the share modal/dialog to open
-19. In the 'Type a name' section, you will see a list of people - select the FIRST person shown (click their checkbox or name)
-20. Select the SECOND person shown in the list (click their checkbox or name)
-21. Click inside the 'Write a message' text box
-22. Type exactly: new post check it out!
-23. Click the 'Send' button to share the post with the selected people
-24. Wait 2 seconds to confirm completion
+14. Navigate to {profile_url}
+15. Wait 3 seconds for the profile page to load
+16. Click on the 'Activity' tab on the profile page
+17. Wait 3 seconds for Activity tab to load
+18. Look for the 'Posts' section in the Activity tab
+19. Find your most recent post (should be at the top of Posts section)
+20. Click the 'Share' button on that post (usually has a forward arrow icon)
+21. Wait 2 seconds for the share modal/dialog to open
+22. In the 'Type a name' section, you will see a list of people - click the checkbox or name of the FIRST person shown
+23. Click the checkbox or name of the SECOND person shown in the list
+24. Click inside the 'Write a message' text box
+25. Type exactly: new post check it out!
+26. Click the 'Send' button to share the post with the selected people
+27. Wait 2 seconds to confirm completion
 
-IMPORTANT: Text is in clipboard. Paste it, post it, then share with top 2 people from the list."""
+IMPORTANT: Text is in clipboard. Paste it, post it, go to your profile Activity tab, then share with top 2 people."""
             else:
                 instruction_text = f"""Create and share a LinkedIn post:
 
@@ -223,19 +230,22 @@ IMPORTANT: Text is in clipboard. Paste it, post it, then share with top 2 people
 4. Press Cmd+V (Mac) or Ctrl+V (Windows) to paste - wait 1 second
 5. Click the 'Post' button to publish
 6. Wait 5 seconds for post to be published
-7. Click 'Activity' in the left sidebar navigation menu
-8. Wait 3 seconds for Activity page to load
-9. Find your most recent post (should be at the top of the list)
-10. Click the 'Share' button on your post (usually has a forward arrow icon)
-11. Wait 2 seconds for the share modal/dialog to open
-12. In the 'Type a name' section, you will see a list of people - select the FIRST person shown (click their checkbox or name)
-13. Select the SECOND person shown in the list (click their checkbox or name)
-14. Click inside the 'Write a message' text box
-15. Type exactly: new post check it out!
-16. Click the 'Send' button to share the post with the selected people
-17. Wait 2 seconds to confirm completion
+7. Navigate to {profile_url}
+8. Wait 3 seconds for the profile page to load
+9. Click on the 'Activity' tab on the profile page
+10. Wait 3 seconds for Activity tab to load
+11. Look for the 'Posts' section in the Activity tab
+12. Find your most recent post (should be at the top of Posts section)
+13. Click the 'Share' button on that post (usually has a forward arrow icon)
+14. Wait 2 seconds for the share modal/dialog to open
+15. In the 'Type a name' section, you will see a list of people - click the checkbox or name of the FIRST person shown
+16. Click the checkbox or name of the SECOND person shown in the list
+17. Click inside the 'Write a message' text box
+18. Type exactly: new post check it out!
+19. Click the 'Send' button to share the post with the selected people
+20. Wait 2 seconds to confirm completion
 
-IMPORTANT: Text is in clipboard. Paste it, post it, then share with top 2 people from the list."""
+IMPORTANT: Text is in clipboard. Paste it, post it, go to your profile Activity tab, then share with top 2 people."""
             
             # Store task reference BEFORE creating it for proper cancellation
             self.current_task = asyncio.create_task(
